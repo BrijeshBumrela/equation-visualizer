@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <script src="https://unpkg.com/mathjs@6.6.1/dist/math.min.js"></script>
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML.js"></script>
+    <script src="https://unpkg.com/d3@3/d3.min.js"></script>
+    <script src="https://unpkg.com/function-plot@1/dist/function-plot.js"></script>
+
+    <style>
+        body,
+        html,
+        table td,
+        table th,
+        input[type=text] {
+            font-size: 11pt;
+            font-family: verdana, arial, sans-serif;
+        }
+
+        h1 {
+            font-size: 11pt;
+        }
+
+        input[type=text] {
+            padding: 5px;
+            width: 400px;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        table td,
+        table th {
+            padding: 5px;
+            border: 1px solid lightgray;
+        }
+
+        table th {
+            background-color: lightgray;
+        }
+
+        td {
+            display: block;
+        }
+
+        .result {
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>
+        Expression evaluation with math.js, pretty printing with MathJax
+    </h1>
+
+    <table>
+        <tr>
+            <th>Expression</th>
+            <td><input type="text" id="expr" /></td>
+        </tr>
+        <tr>
+            <th>Variables</th>
+            <div class="variable">
+            </div>
+        </tr>
+        <tr>
+            <th>Pretty print</th>
+            <td>
+                <div id="pretty">$$$$</div>
+            </td>
+        </tr>
+        <tr>
+            <th>Result</th>
+            <td>
+                <div id="result">&nbsp;</div>
+            </td>
+        </tr>
+    </table>
+
+    <div id="target">
+
+    </div>
+
+    <script src="./bundle.js"></script>
+</body>
+
+</html>
