@@ -20,7 +20,10 @@ expr.oninput = function() {
   const isEqualSignPresent = /=/gi.test(equation);
 
   updateVariables(variables || [], varDOMNode);
-  if (!variables) return;
+  if (!variables) {
+    result.innerHTML = "";
+    return;
+  }
 
   if (isEqualSignPresent) {
     const [lhs, rhs] = equation.split("=").map(eq => eq.trim());
