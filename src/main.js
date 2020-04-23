@@ -2,7 +2,7 @@ import "bulma/css/bulma.min.css";
 import "./style.css";
 
 import { implicitEnum, parenthesisEnum } from "./constants";
-import { expr, pretty, result, varDOMNode, dynamicDOMNode } from "./selectors";
+import { expr, pretty, result, varDOMNodes, dynamicDOMNode } from "./selectors";
 
 const parenthesis = parenthesisEnum["KEEP"];
 const implicit = implicitEnum["HIDE"];
@@ -19,7 +19,7 @@ expr.oninput = function() {
   const variables = equation.match(/[xyz]/gi);
   const isEqualSignPresent = /=/gi.test(equation);
 
-  updateVariables(variables || [], varDOMNode);
+  updateVariables(variables || [], varDOMNodes);
   if (!variables) {
     result.innerHTML = "";
     return;
@@ -31,7 +31,7 @@ expr.oninput = function() {
     equation = `(${rhs}) - (${lhs})`;
     fnType = "implicit";
   }
-  const varNodes = Array.from(varDOMNode.children);
+  const varNodes = Array.from(varDOMNodes.children);
   isEqualSignPresent ? disableVariables(varNodes) : enableVariables(varNodes);
 
   try {
@@ -65,7 +65,7 @@ expr.oninput = function() {
 };
 
 const getAllVariableValues = () => {
-  const childNodes = Array.from(varDOMNode.children);
+  const childNodes = Array.from(varDOMNodes.children);
   return childNodes.reduce((acc, node) => {
     const char = node.childNodes[0].htmlFor;
     const value = node.childNodes[1].value;
