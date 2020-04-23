@@ -14,8 +14,18 @@ pretty.innerHTML =
 
 expr.oninput = function() {
   let nodeParser = null;
+  let equation = expr.value;
+  let fnType = undefined;
 
-  const variables = expr.value.match(/[xyz]/gi);
+  const variables = equation.match(/[xyz]/gi);
+  const isEqualSignPresent = /=/gi.test(equation);
+
+  if (isEqualSignPresent) {
+    const [lhs, rhs] = equation.split("=").map(eq => eq.trim());
+    if (!rhs) return;
+    equation = `(${rhs}) - (${lhs})`;
+    fnType = 'implicit';
+  }
 
   if (!variables) return;
 
@@ -23,7 +33,7 @@ expr.oninput = function() {
 
   try {
     // parse the expression
-    nodeParser = math.parse(expr.value);
+    nodeParser = math.parse(equation);
 
     // evaluate the result of the expression
     result.innerHTML = math.format(
@@ -43,9 +53,13 @@ expr.oninput = function() {
     // display and re-render the expression
     const elem = MathJax.Hub.getAllJax("pretty")[0];
     MathJax.Hub.Queue(["Text", elem, latex]);
+    const eqObj = { fn:equation };
+    if (fnType) {
+      eqObj.fnType = fnType;
+    }
 
     // Draw the graph
-    drawGraph(expr.value, '#target');
+    drawGraph(eqObj, '#target');
   } catch (err) {}
 };
 
@@ -106,14 +120,21 @@ const addVariables = (variables, domNode) => {
     }
   });
 };
+/* 
+  graph: {
+    equation: <equation-string>,
+    fnType: 'implicit'|'explicit'
+  }
+*/
 
-const drawGraph = (eqString, target) => {
+const drawGraph = (eqObj, target) => {
   functionPlot({
     target,
     data: [
-      {
-        fn: eqString
-      }
+      eqObj
+    ],
+    plugins: [
+      functionPlot.plugins.zoomBox()
     ],
     width: 800,
     height: 800

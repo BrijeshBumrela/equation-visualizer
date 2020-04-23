@@ -5,7 +5,8 @@
 .map-div {
     width: 80%;
     margin: auto;
-    height: 90vh;
+    height: 850px;
+    padding: 10px;
 }
 
 .plus-symbol {
