@@ -9,7 +9,7 @@ const implicitEnum = {
     HIDE: "hide"
 }
 
-module.exports = {
+export {
     parenthesisEnum,
     implicitEnum
 }

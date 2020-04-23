@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/BrijeshBumrela/equation-visualizer#readme",
   "dependencies": {
+    "bulma": "^0.8.2",
     "html-webpack-plugin": "^4.2.0",
     "webpack": "^4.42.1"
   },
@@ -27,6 +28,9 @@
     "@babel/core": "^7.9.0",
     "@babel/preset-env": "^7.9.5",
     "babel-loader": "^8.1.0",
+    "css-loader": "^3.5.2",
+    "file-loader": "^6.0.0",
+    "style-loader": "^1.1.4",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3"
   }

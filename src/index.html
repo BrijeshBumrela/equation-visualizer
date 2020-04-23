@@ -56,36 +56,48 @@
 
 <body>
 
-    <h1>
-        Expression evaluation with math.js, pretty printing with MathJax
-    </h1>
-
-    <table>
-        <tr>
-            <th>Expression</th>
-            <td><input type="text" id="expr" /></td>
-        </tr>
-        <tr>
-            <th>Variables</th>
-            <div class="variable">
+    <div class="container is-fluid">
+        <div class="columns">
+            <div class="column is-4">
+                <ul>
+                    <li>
+                        <div class="card">
+                            <div class="field">
+                                <label class="label">Expression</label>
+                                <div class="control">
+                                    <input class="input" type="text" placeholder="Type your expression here" id="expr">
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="label">Pretty Print</label>
+                                <div class="control">
+                                    <div class="input" type="text" readonly id="pretty"></div>
+                                </div>
+                            </div>
+                            <div class="variableWrapper">
+                                <label class="label">Variables</label>
+                                <div class="variables"></div>
+                            </div>
+                            <div class="field">
+                                <label class="label">Result</label>
+                                <div class="control">
+                                    <div class="input" type="text" readonly id="result"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <div class="plus-symbol">
+                    <span>+</span>
+                </div>
             </div>
-        </tr>
-        <tr>
-            <th>Pretty print</th>
-            <td>
-                <div id="pretty">$$$$</div>
-            </td>
-        </tr>
-        <tr>
-            <th>Result</th>
-            <td>
-                <div id="result">&nbsp;</div>
-            </td>
-        </tr>
-    </table>
-
-    <div id="target">
-
+            <div class="column is-8">
+                <div class="card">
+                    <div id="target" class="map-div">
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="./bundle.js"></script>

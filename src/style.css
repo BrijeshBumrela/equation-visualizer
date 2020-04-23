@@ -1,0 +1,28 @@
+.card {
+    padding: 10px;
+}
+
+.map-div {
+    width: 80%;
+    margin: auto;
+    height: 90vh;
+}
+
+.plus-symbol {
+    padding: 30px 0;
+    width: 100%;
+    text-align: center;
+}
+
+.plus-symbol span {
+    display: inline-block;
+    min-width: 20px;
+    min-height: 20px;
+    border-radius: 50px;
+    background: red;
+    padding: 10px;
+}
+
+.plus-symbol span:hover {
+    cursor: pointer;
+}

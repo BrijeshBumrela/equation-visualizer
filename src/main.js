@@ -1,5 +1,7 @@
-import { parenthesisEnum, implicitEnum } from './constants';
+import 'bulma/css/bulma.min.css';
+import './style.css';
 
+import { implicitEnum, parenthesisEnum } from './constants';
 import { expr, pretty, result, varDOMNode, dynamicDOMNode } from './selectors';
 
 const parenthesis = parenthesisEnum["KEEP"];
@@ -13,7 +15,9 @@ pretty.innerHTML =
 expr.oninput = function() {
   let nodeParser = null;
 
-  const variables = expr.value.match(/[a-z]/gi);
+  const variables = expr.value.match(/[xyz]/gi);
+
+  if (!variables) return;
 
   addVariables(variables, varDOMNode);
 
@@ -61,9 +65,12 @@ const createVarNode = variable => {
   if (variable !== "x" && variable !== "y") return null;
 
   const td = document.createElement("td");
+  
   const label = document.createElement("label");
   label.htmlFor = variable;
   label.textContent = variable;
+  label.className = "label";
+
 
   const input = document.createElement("input");
   input.type = "text";
@@ -73,6 +80,14 @@ const createVarNode = variable => {
   input.addEventListener("input", e => {
     expr.oninput();
   });
+  input.className = "input";
+
+  /* 
+    <td>
+      <label class="label">x</label>
+      <input name="x" id="var-1" value="" type="text" />
+    </td>
+  */
 
   td.appendChild(label);
   td.appendChild(input);
@@ -99,6 +114,8 @@ const drawGraph = (eqString, target) => {
       {
         fn: eqString
       }
-    ]
+    ],
+    width: 800,
+    height: 800
   });
 };
