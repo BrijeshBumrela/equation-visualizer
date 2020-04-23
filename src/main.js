@@ -1,16 +1,15 @@
-import 'bulma/css/bulma.min.css';
-import './style.css';
+import "bulma/css/bulma.min.css";
+import "./style.css";
 
-import { implicitEnum, parenthesisEnum } from './constants';
-import { expr, pretty, result, varDOMNode, dynamicDOMNode } from './selectors';
+import { implicitEnum, parenthesisEnum } from "./constants";
+import { expr, pretty, result, varDOMNode, dynamicDOMNode } from "./selectors";
 
 const parenthesis = parenthesisEnum["KEEP"];
 const implicit = implicitEnum["HIDE"];
 
 // initialize with an example expression
 expr.value = "";
-pretty.innerHTML =
-  "$$" + math.parse(expr.value).toTex({ parenthesis }) + "$$";
+pretty.innerHTML = "$$" + math.parse(expr.value).toTex({ parenthesis }) + "$$";
 
 expr.oninput = function() {
   let nodeParser = null;
@@ -20,25 +19,26 @@ expr.oninput = function() {
   const variables = equation.match(/[xyz]/gi);
   const isEqualSignPresent = /=/gi.test(equation);
 
+  updateVariables(variables || [], varDOMNode);
+  if (!variables) return;
+
   if (isEqualSignPresent) {
     const [lhs, rhs] = equation.split("=").map(eq => eq.trim());
     if (!rhs) return;
     equation = `(${rhs}) - (${lhs})`;
-    fnType = 'implicit';
+    fnType = "implicit";
   }
-
-  if (!variables) return;
-
-  addVariables(variables, varDOMNode);
+  const varNodes = Array.from(varDOMNode.children);
+  isEqualSignPresent ? disableVariables(varNodes) : enableVariables(varNodes);
 
   try {
     // parse the expression
     nodeParser = math.parse(equation);
 
     // evaluate the result of the expression
-    result.innerHTML = math.format(
-      nodeParser.compile().evaluate(getAllVariableValues())
-    );
+    result.innerHTML = isEqualSignPresent
+      ? ""
+      : math.format(nodeParser.compile().evaluate(getAllVariableValues()));
   } catch (err) {
     result.innerHTML =
       '<span style="color: red;">' + err.toString() + "</span>";
@@ -46,20 +46,18 @@ expr.oninput = function() {
 
   try {
     // export the expression to LaTeX
-    const latex = nodeParser
-      ? nodeParser.toTex({ parenthesis , implicit })
-      : "";
+    const latex = nodeParser ? nodeParser.toTex({ parenthesis, implicit }) : "";
 
     // display and re-render the expression
     const elem = MathJax.Hub.getAllJax("pretty")[0];
     MathJax.Hub.Queue(["Text", elem, latex]);
-    const eqObj = { fn:equation };
+    const eqObj = { fn: equation };
     if (fnType) {
       eqObj.fnType = fnType;
     }
 
     // Draw the graph
-    drawGraph(eqObj, '#target');
+    drawGraph(eqObj, "#target");
   } catch (err) {}
 };
 
@@ -75,16 +73,23 @@ const getAllVariableValues = () => {
   }, {});
 };
 
+const enableVariables = nodes => {
+  nodes.forEach(node => (node.childNodes[1].disabled = false));
+};
+
+const disableVariables = nodes => {
+  nodes.forEach(node => (node.childNodes[1].disabled = true));
+};
+
 const createVarNode = variable => {
   if (variable !== "x" && variable !== "y") return null;
 
   const td = document.createElement("td");
-  
+
   const label = document.createElement("label");
   label.htmlFor = variable;
   label.textContent = variable;
   label.className = "label";
-
 
   const input = document.createElement("input");
   input.type = "text";
@@ -94,7 +99,8 @@ const createVarNode = variable => {
   input.addEventListener("input", e => {
     expr.oninput();
   });
-  input.className = "input";
+  input.classList.add("input");
+  input.classList.add("input-variable");
 
   /* 
     <td>
@@ -109,17 +115,31 @@ const createVarNode = variable => {
   return td;
 };
 
-const addVariables = (variables, domNode) => {
-  variables.forEach(variable => {
-    const varNode = dynamicDOMNode(variable);
-    if (!varNode) {
-      const newVarNode = createVarNode(variable);
-      if (newVarNode) {
-        domNode.appendChild(newVarNode);
+const updateVariables = (variables = [], domNode) => {
+  // * When all variables are removed still you would like to call this function to remove 
+  // * the node for the variable that was recently deleted
+  
+  // * adds a new node for new variable
+  if (variables.length > 0) {
+    variables.forEach(variable => {
+      const varNode = dynamicDOMNode(variable);
+      if (!varNode) {
+        const newVarNode = createVarNode(variable);
+        if (newVarNode) {
+          domNode.appendChild(newVarNode);
+        }
       }
+    });
+  }
+
+  // * removes the node for deleted variable
+  Array.from(domNode.children).forEach(child => {
+    if (!variables.includes(child.innerText)) {
+      domNode.removeChild(child);
     }
   });
 };
+
 /* 
   graph: {
     equation: <equation-string>,
@@ -130,12 +150,8 @@ const addVariables = (variables, domNode) => {
 const drawGraph = (eqObj, target) => {
   functionPlot({
     target,
-    data: [
-      eqObj
-    ],
-    plugins: [
-      functionPlot.plugins.zoomBox()
-    ],
+    data: [eqObj],
+    plugins: [functionPlot.plugins.zoomBox()],
     width: 800,
     height: 800
   });
