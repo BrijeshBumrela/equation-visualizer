@@ -1,37 +1,42 @@
 {
-  "name": "equation-visualizer",
-  "version": "1.0.0",
-  "description": "Tool to parse, visualize and evaluate equations",
-  "main": "index.js",
-  "scripts": {
-    "dev": "webpack-dev-server --config=config/webpack.config.js",
-    "compile": "webpack --config=config/webpack.config.js",
-    "transpile": "babel src/main.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/BrijeshBumrela/equation-visualizer.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/BrijeshBumrela/equation-visualizer/issues"
-  },
-  "homepage": "https://github.com/BrijeshBumrela/equation-visualizer#readme",
+  "name": "equ-visualizer",
+  "version": "0.1.0",
+  "private": true,
   "dependencies": {
-    "bulma": "^0.8.2",
-    "html-webpack-plugin": "^4.2.0",
-    "webpack": "^4.42.1"
+    "@ant-design/icons": "^4.2.1",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.3.2",
+    "@testing-library/user-event": "^7.1.2",
+    "antd": "^4.4.3",
+    "bulma": "^0.9.0",
+    "d3": "^3.5.17",
+    "function-plot": "^1.19.1",
+    "mathjax": "^3.0.5",
+    "mathjs": "^7.1.0",
+    "node-sass": "^4.14.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-scripts": "3.4.1"
   },
-  "devDependencies": {
-    "@babel/core": "^7.9.0",
-    "@babel/preset-env": "^7.9.5",
-    "babel-loader": "^8.1.0",
-    "css-loader": "^3.5.2",
-    "file-loader": "^6.0.0",
-    "style-loader": "^1.1.4",
-    "webpack-cli": "^3.3.11",
-    "webpack-dev-server": "^3.10.3"
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
