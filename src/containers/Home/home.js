@@ -100,10 +100,11 @@ const Home = () => {
             functionPlot({
                 target: "#target",
                 data: result,
-                plugins: [functionPlot.plugins.zoomBox()],
+                plugins: [ /* functionPlot.plugins.zoomBox() */ ],
                 ...graph,
             });
         } catch(e) {
+            console.log(e);
         }
     }, [equations, graph]);
 
@@ -120,9 +121,9 @@ const Home = () => {
         const selectedEqn = { ...equations[index] }
         const otherEqns = equations.filter((_, idx) => idx !== Number(index))
 
-        /**
-         * Equation is considered `implicit` as soon as it encounters `=` in equation
-         */
+        // /**
+        //  * Equation is considered `implicit` as soon as it encounters `=` in equation
+        //  */
         selectedEqn.isImplicit = equationString.includes('=');
         if (selectedEqn.isImplicit) {
             const [LHS, RHS] = equationString.split("=");
@@ -165,7 +166,6 @@ const Home = () => {
     }
 
     const handleEqValueChange = (newEquationSettings, index) => {
-        console.log("INDEXXUUU", index);
         let selectedEqn = { ...equations[index] }
         const otherEqns = equations.filter((_, idx) => idx !== index);
 

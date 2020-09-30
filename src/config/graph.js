@@ -10,11 +10,11 @@ const graphConfig = () => ({
     },
     grid: false,
     annotations: [],
-    tip: {
-        xLine: false,
-        yLine: false,
-        renderer: undefined
-    }
+    // tip: {
+    //     xLine: false,
+    //     yLine: false,
+    //     renderer: undefined
+    // }
 })
 
 export default graphConfig;
