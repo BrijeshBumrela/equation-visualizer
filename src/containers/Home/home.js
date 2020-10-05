@@ -60,24 +60,7 @@ const Home = () => {
 
     }, []);
 
-
-    const initializeLatexString = () => "$$" + parse('').toTex({ parenthesis: "keep" }) + "$$";
-
     useEffect(() => {
-        if (equations.length > 1) {
-            const newEquationDiv = document.querySelector(`#pretty-${equations.length - 1}`);
-            newEquationDiv.textContent = initializeLatexString();
-        }
-
-        // * equationsCountRef keeps track of equations count till the previous render
-        // * on re-rendering, checking if the new equation is getting added
-        // * Do MathJax typeset only if new eq is added
-        if (equationsCountRef.current !== equations.length) {
-            const newEquationDiv = document.querySelector(`#pretty-${equations.length - 1}`);
-            equationsCountRef.current = equations.length;
-            window.MathJax && window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, newEquationDiv]);
-        }
-
         const result = equations.filter(equation => equation.eqString.length > 0).map(equation => {
             const fn = equation.eqString;
             let temp = {}
@@ -96,11 +79,12 @@ const Home = () => {
             return { fn, ...equation, derivative: derivativeObj, ...temp }
         })
 
+        // console.log("final object, ", { data: result, ...graph })
+
         try {
             functionPlot({
                 target: "#target",
                 data: result,
-                plugins: [ /* functionPlot.plugins.zoomBox() */ ],
                 ...graph,
             });
         } catch(e) {
@@ -207,7 +191,7 @@ const Home = () => {
                 </Modal>
                 <div className={styles.leftSide}>
                     <div>
-                        {equations.map((equation, index) => <Equation showEqModal={setEqModal} name={index} onEqnChange={onEqnChange} key={index}/>)}
+                        {equations.map((equation, index) => <Equation eqString={equation.eqString} showEqModal={setEqModal} name={index} onEqnChange={onEqnChange} key={index}/>)}
                     </div>
                     <div>
                         <Button onClick={addEquation} text="Add Equation"></Button>

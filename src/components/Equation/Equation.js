@@ -1,9 +1,15 @@
 import React from 'react';
+import { parse } from 'mathjs';
 import Input from '../../UI/Input/Input';
 import styles from './Equation.module.scss';
 import { SettingOutlined } from '@ant-design/icons'
 
-const Equation = ({ onEqnChange, name, showEqModal }) => {
+const Equation = ({ onEqnChange, name, showEqModal, eqString }) => {
+    const setString = (ref, eqString) => {
+        if (ref & eqString) ref.textContent = "$$" + parse(eqString).toTex({ parenthesis: "keep" }) + "$$";
+        window.MathJax && window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, ref]);
+    }
+
     return (
         <div className={styles.eqnWrapper}>
             <div className={styles.header}>
@@ -13,7 +19,7 @@ const Equation = ({ onEqnChange, name, showEqModal }) => {
                 </span>
             </div>
             <Input onChange={(e) => onEqnChange(e, name)} name={name} title="Equation / Expression" placeholder="Enter Equation"/>
-            <div id={`pretty-${name}`}>{"$$$$"}</div>
+            <div ref={ref => setString(ref, eqString)} id={`pretty-${name}`}>{"$$$$"}</div>
         </div>
     )
 }
