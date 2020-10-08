@@ -8,8 +8,6 @@ import SingleSwitch from '../SingleSwitch/SingleSwitch';
 const EqForm = ({ onValueChange, updateModal, index, initialData }) => {
     const [eqSettings, setEqSettings] = useState(initialData);
 
-    console.log("INEXDDXX", index);
-
     useEffect(() => {
         setEqSettings(initialData)
     }, [initialData, index]);

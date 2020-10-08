@@ -13,7 +13,7 @@ const graphConfig = () => ({
     tip: {
         xLine: false,
         yLine: false,
-        renderer: undefined
+        // renderer: undefined
     }
 })
 

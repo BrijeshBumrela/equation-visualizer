@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Equation from '../../components/Equation/Equation';
 import Button from '../../UI/Button/Button';
 import styles from './home.module.scss';
@@ -10,6 +10,7 @@ import Nav from '../../components/Nav/Nav';
 import GraphForm from '../../components/GraphForm/GraphForm';
 import EqForm from '../../components/EqForm/EqForm';
 import { parse, derivative } from 'mathjs';
+import fileDownload from 'js-file-download';
 
 window.d3 = d3;
 
@@ -44,8 +45,6 @@ const Home = () => {
 
     const setModal = status => setGraphModalVisible(status);
 
-    const equationsCountRef = useRef();
-
     useEffect(() => {
         const script1 = document.createElement('script');
         const script2 = document.createElement('script');
@@ -60,52 +59,44 @@ const Home = () => {
 
     }, []);
 
-
-    const initializeLatexString = () => "$$" + parse('').toTex({ parenthesis: "keep" }) + "$$";
-
-    useEffect(() => {
-        if (equations.length > 1) {
-            const newEquationDiv = document.querySelector(`#pretty-${equations.length - 1}`);
-            newEquationDiv.textContent = initializeLatexString();
-        }
-
-        // * equationsCountRef keeps track of equations count till the previous render
-        // * on re-rendering, checking if the new equation is getting added
-        // * Do MathJax typeset only if new eq is added
-        if (equationsCountRef.current !== equations.length) {
-            const newEquationDiv = document.querySelector(`#pretty-${equations.length - 1}`);
-            equationsCountRef.current = equations.length;
-            window.MathJax && window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, newEquationDiv]);
-        }
-
-        const result = equations.filter(equation => equation.eqString.length > 0).map(equation => {
+    const updateEquations = useCallback(() => {
+        return equations.filter(equation => equation.eqString.length > 0).map(equation => {
             const fn = equation.eqString;
-            let temp = {}
             let derivativeObj;
+
+            const finalObject = { fn, ...equation }
+
             if (equation.isDerivative) {
                 try {
                     derivativeObj = {
                         fn: derivative(equation.eqString, 'x').toString(),
                         updateOnMouseMove: true
                     }
-                } catch(e) {}
+                    finalObject.derivative = derivativeObj;
+                } catch(e) {
+                    console.error("ERROR ALA RE", e);
+                }
             }
             if (equation.isImplicit) {
-                temp.fnType = 'implicit';
+                finalObject.fnType = 'implicit';
             }
-            return { fn, ...equation, derivative: derivativeObj, ...temp }
+            return finalObject
         })
+    }, [equations])
+
+    useEffect(() => {
+        const result = updateEquations();
 
         try {
             functionPlot({
                 target: "#target",
-                data: result,
-                plugins: [functionPlot.plugins.zoomBox()],
+                data:  result,
                 ...graph,
             });
         } catch(e) {
+            console.log(e);
         }
-    }, [equations, graph]);
+    }, [equations, graph, updateEquations]);
 
     const addEquation = () => {
         setEquation(equations => [...equations, { ...equState }])
@@ -122,7 +113,7 @@ const Home = () => {
 
         /**
          * Equation is considered `implicit` as soon as it encounters `=` in equation
-         */
+        */
         selectedEqn.isImplicit = equationString.includes('=');
         if (selectedEqn.isImplicit) {
             const [LHS, RHS] = equationString.split("=");
@@ -165,7 +156,6 @@ const Home = () => {
     }
 
     const handleEqValueChange = (newEquationSettings, index) => {
-        console.log("INDEXXUUU", index);
         let selectedEqn = { ...equations[index] }
         const otherEqns = equations.filter((_, idx) => idx !== index);
 
@@ -175,9 +165,26 @@ const Home = () => {
         setEquation(updatedEqns);
     }
 
+    const handleJsonGenerate = () => {
+        const equations = updateEquations();
+
+        const { grid, width, height, title, xAxis, yAxis } = graph;
+
+        fileDownload(JSON.stringify({ 
+            data: equations, 
+            annotations: [], 
+            grid: grid, 
+            height: width, 
+            width: height, 
+            title: title,
+            xAxis: xAxis,
+            yAxis: yAxis,
+        }), 'value.json');
+    }
+
     return (
         <>
-            <Nav onClick={showModal}/>
+            <Nav onClick={showModal} onGenerate={handleJsonGenerate}/>
 
             <div className={styles.homeWrapper}>
                 <Modal 
@@ -207,7 +214,7 @@ const Home = () => {
                 </Modal>
                 <div className={styles.leftSide}>
                     <div>
-                        {equations.map((equation, index) => <Equation showEqModal={setEqModal} name={index} onEqnChange={onEqnChange} key={index}/>)}
+                        {equations.map((equation, index) => <Equation eqString={equation.eqString} showEqModal={setEqModal} name={index} onEqnChange={onEqnChange} key={index}/>)}
                     </div>
                     <div>
                         <Button onClick={addEquation} text="Add Equation"></Button>
