@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Equation from '../../components/Equation/Equation';
 import Button from '../../UI/Button/Button';
 import styles from './home.module.scss';
@@ -10,6 +10,7 @@ import Nav from '../../components/Nav/Nav';
 import GraphForm from '../../components/GraphForm/GraphForm';
 import EqForm from '../../components/EqForm/EqForm';
 import { parse, derivative } from 'mathjs';
+import fileDownload from 'js-file-download';
 
 window.d3 = d3;
 
@@ -58,8 +59,8 @@ const Home = () => {
 
     }, []);
 
-    useEffect(() => {
-        const result = equations.filter(equation => equation.eqString.length > 0).map(equation => {
+    const updateEquations = useCallback(() => {
+        return equations.filter(equation => equation.eqString.length > 0).map(equation => {
             const fn = equation.eqString;
             let derivativeObj;
 
@@ -81,17 +82,21 @@ const Home = () => {
             }
             return finalObject
         })
+    }, [equations])
+
+    useEffect(() => {
+        const result = updateEquations();
 
         try {
             functionPlot({
                 target: "#target",
-                data:  [...result],
+                data:  result,
                 ...graph,
             });
         } catch(e) {
             console.log(e);
         }
-    }, [equations, graph]);
+    }, [equations, graph, updateEquations]);
 
     const addEquation = () => {
         setEquation(equations => [...equations, { ...equState }])
@@ -160,9 +165,26 @@ const Home = () => {
         setEquation(updatedEqns);
     }
 
+    const handleJsonGenerate = () => {
+        const equations = updateEquations();
+
+        const { grid, width, height, title, xAxis, yAxis } = graph;
+
+        fileDownload(JSON.stringify({ 
+            data: equations, 
+            annotations: [], 
+            grid: grid, 
+            height: width, 
+            width: height, 
+            title: title,
+            xAxis: xAxis,
+            yAxis: yAxis,
+        }), 'value.json');
+    }
+
     return (
         <>
-            <Nav onClick={showModal}/>
+            <Nav onClick={showModal} onGenerate={handleJsonGenerate}/>
 
             <div className={styles.homeWrapper}>
                 <Modal 

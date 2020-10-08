@@ -11,11 +11,13 @@
     "bulma": "^0.9.0",
     "d3": "^3.5.17",
     "function-plot": "^1.19.1",
+    "js-file-download": "^0.4.12",
     "mathjax": "^3.0.5",
     "mathjs": "^7.1.0",
     "node-sass": "^4.14.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-file-download": "^0.3.5",
     "react-scripts": "3.4.1"
   },
   "scripts": {
