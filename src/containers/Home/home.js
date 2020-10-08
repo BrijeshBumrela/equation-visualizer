@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Equation from '../../components/Equation/Equation';
 import Button from '../../UI/Button/Button';
 import styles from './home.module.scss';
@@ -44,8 +44,6 @@ const Home = () => {
 
     const setModal = status => setGraphModalVisible(status);
 
-    const equationsCountRef = useRef();
-
     useEffect(() => {
         const script1 = document.createElement('script');
         const script2 = document.createElement('script');
@@ -63,28 +61,31 @@ const Home = () => {
     useEffect(() => {
         const result = equations.filter(equation => equation.eqString.length > 0).map(equation => {
             const fn = equation.eqString;
-            let temp = {}
             let derivativeObj;
+
+            const finalObject = { fn, ...equation }
+
             if (equation.isDerivative) {
                 try {
                     derivativeObj = {
                         fn: derivative(equation.eqString, 'x').toString(),
                         updateOnMouseMove: true
                     }
-                } catch(e) {}
+                    finalObject.derivative = derivativeObj;
+                } catch(e) {
+                    console.error("ERROR ALA RE", e);
+                }
             }
             if (equation.isImplicit) {
-                temp.fnType = 'implicit';
+                finalObject.fnType = 'implicit';
             }
-            return { fn, ...equation, derivative: derivativeObj, ...temp }
+            return finalObject
         })
-
-        // console.log("final object, ", { data: result, ...graph })
 
         try {
             functionPlot({
                 target: "#target",
-                data: result,
+                data:  [...result],
                 ...graph,
             });
         } catch(e) {
@@ -105,9 +106,9 @@ const Home = () => {
         const selectedEqn = { ...equations[index] }
         const otherEqns = equations.filter((_, idx) => idx !== Number(index))
 
-        // /**
-        //  * Equation is considered `implicit` as soon as it encounters `=` in equation
-        //  */
+        /**
+         * Equation is considered `implicit` as soon as it encounters `=` in equation
+        */
         selectedEqn.isImplicit = equationString.includes('=');
         if (selectedEqn.isImplicit) {
             const [LHS, RHS] = equationString.split("=");
