@@ -4,8 +4,9 @@ import Input from '../../UI/Input/Input';
 import styles from './Equation.module.scss';
 import { SettingOutlined } from '@ant-design/icons'
 
-const Equation = ({ onEqnChange, name, showEqModal, eqString }) => {
+const Equation = ({ onEqnChange, name, showEqModal, eqString, defaultValue }) => {
     const setString = (ref, eqString) => {
+        console.log(eqString)
         if (ref & eqString) ref.textContent = "$$" + parse(eqString).toTex({ parenthesis: "keep" }) + "$$";
         window.MathJax && window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, ref]);
     }
@@ -18,7 +19,7 @@ const Equation = ({ onEqnChange, name, showEqModal, eqString }) => {
                     <SettingOutlined style={{ fontSize: '20px' }} />
                 </span>
             </div>
-            <Input onChange={(e) => onEqnChange(e, name)} name={name} title="Equation / Expression" placeholder="Enter Equation"/>
+            <Input defaultValue={defaultValue} onChange={(e) => onEqnChange(e, name)} name={name} title="Equation / Expression" placeholder="Enter Equation"/>
             <div ref={ref => setString(ref, eqString)} id={`pretty-${name}`}>{"$$$$"}</div>
         </div>
     )

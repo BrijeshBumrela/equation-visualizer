@@ -21,18 +21,27 @@ window.d3 = d3;
  * @param fnType {'implicit' | 'explicit'}
  * 
 */
-const equState = {
-    eqString: '',
-    closed: false,
-    skiptip: false,
-    color: 'red',
-    isDerivative: false,
+const equState = (obj) => {
+    let eqString = '', color = 'red';
+
+    if (obj) {
+        eqString = obj.eqString;
+        color = obj.color
+    }
+
+    return {
+        eqString,
+        closed: false,
+        skiptip: false,
+        color,
+        isDerivative: false,
+    }
 }
 
 const initialGraph = graphConfig();
 
 const Home = () => {
-    const [equations, setEquation] = useState([equState])
+    const [equations, setEquation] = useState([equState()])
     const [graph, setGraph] = useState(initialGraph)
     const [graphModalVisible, setGraphModalVisible] = useState(false)
     const [eqModalVisible, setEqModalVisible] = useState({ status: false, index: null })
@@ -99,7 +108,7 @@ const Home = () => {
     }, [equations, graph, updateEquations]);
 
     const addEquation = () => {
-        setEquation(equations => [...equations, { ...equState }])
+        setEquation(equations => [...equations, { ...equState() }])
     }
 
     const onEqnChange = (e, index = 0) => {
@@ -168,18 +177,14 @@ const Home = () => {
     const handleJsonGenerate = () => {
         const equations = updateEquations();
 
-        const { grid, width, height, title, xAxis, yAxis } = graph;
+        const { tip, ...rest } = graph;
+
+
 
         fileDownload(JSON.stringify({ 
             data: equations, 
-            annotations: [], 
-            grid: grid, 
-            height: width, 
-            width: height, 
-            title: title,
-            xAxis: xAxis,
-            yAxis: yAxis,
-        }), 'value.json');
+            ...rest
+        }, null, 4), 'value.json');
     }
 
     return (
