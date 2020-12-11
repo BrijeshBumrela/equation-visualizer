@@ -8,6 +8,7 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "antd": "^4.4.3",
+    "axios": "^0.21.0",
     "bulma": "^0.9.0",
     "d3": "^3.5.17",
     "function-plot": "^1.19.1",
