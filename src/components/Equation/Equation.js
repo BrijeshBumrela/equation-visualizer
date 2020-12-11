@@ -6,9 +6,13 @@ import { SettingOutlined } from '@ant-design/icons'
 
 const Equation = ({ onEqnChange, name, showEqModal, eqString, defaultValue }) => {
     const setString = (ref, eqString) => {
-        console.log(eqString)
-        if (ref & eqString) ref.textContent = "$$" + parse(eqString).toTex({ parenthesis: "keep" }) + "$$";
-        window.MathJax && window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, ref]);
+        console.log(eqString, ref, "KYA AY RE")
+        try {
+            if (ref & eqString) ref.textContent = "$$" + parse(eqString).toTex({ parenthesis: "keep" }) + "$$";
+            window.MathJax && window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, ref]);
+        } catch(e) {
+            console.log('ayyo error')
+        }
     }
 
     return (

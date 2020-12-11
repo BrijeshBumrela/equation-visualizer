@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Equation from '../../components/Equation/Equation';
 import Button from '../../UI/Button/Button';
 import styles from './home.module.scss';
-import d3 from 'd3';
+import d3, { easeQuad } from 'd3';
 import functionPlot from 'function-plot';
 import graphConfig from '../../config/graph';
 import { Modal } from 'antd';
@@ -11,8 +11,19 @@ import GraphForm from '../../components/GraphForm/GraphForm';
 import EqForm from '../../components/EqForm/EqForm';
 import { parse, derivative } from 'mathjs';
 import fileDownload from 'js-file-download';
+import imageUploadService from '../../services/imageEqns';
 
 window.d3 = d3;
+
+const fileUpload = imageUploadService(8000)
+
+const fileUploadDummy = (image) => {
+    return new Promise((res, rej) => {
+        setTimeout(() => {
+            res({ data: "x^2 + y^2" })
+        }, 1500);
+    })
+}
 
 /** 
  * @param eqString {string} - equation string (like 'x^2 + y^2')
@@ -103,7 +114,7 @@ const Home = () => {
                 ...graph,
             });
         } catch(e) {
-            console.log(e);
+            console.error('lul error')
         }
     }, [equations, graph, updateEquations]);
 
@@ -118,7 +129,7 @@ const Home = () => {
         let equationString = value;
 
         const selectedEqn = { ...equations[index] }
-        const otherEqns = equations.filter((_, idx) => idx !== Number(index))
+        const otherEqns = [ ...equations ]
 
         /**
          * Equation is considered `implicit` as soon as it encounters `=` in equation
@@ -138,8 +149,12 @@ const Home = () => {
         } catch(e) {
             latexEquation = undefined
         }
+
+        otherEqns[index] = selectedEqn;
+
         setLatexString(latexEquation, index);
-        setEquation([...otherEqns, selectedEqn])
+        setEquation(otherEqns)
+
     }
 
     const setLatexString = (value, index) => {
@@ -187,9 +202,16 @@ const Home = () => {
         }, null, 4), 'value.json');
     }
 
+    const onFileUpload = async (image) => {
+        const res = await fileUploadDummy(image);
+        addEquation(res.data);
+    }
+
+    console.log(equations.map(eqn => eqn.eqString).join());
+
     return (
         <>
-            <Nav onClick={showModal} onGenerate={handleJsonGenerate}/>
+            <Nav onClick={showModal} onFileUpload={onFileUpload} onGenerate={handleJsonGenerate}/>
 
             <div className={styles.homeWrapper}>
                 <Modal 
