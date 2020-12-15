@@ -20,7 +20,7 @@ const fileUpload = imageUploadService(8000)
 const fileUploadDummy = (image) => {
     return new Promise((res, rej) => {
         setTimeout(() => {
-            res({ data: "x^2 + y^2" })
+            res({ data: ["x^2 + 1", "1/x"] })
         }, 1500);
     })
 }
@@ -35,9 +35,12 @@ const fileUploadDummy = (image) => {
 const equState = (obj) => {
     let eqString = '', color = 'red';
 
-    if (obj) {
+    if (obj && obj.eqString) {
         eqString = obj.eqString;
-        color = obj.color
+    }
+
+    if (obj && obj.color) {
+        color = obj.color;
     }
 
     return {
@@ -81,7 +84,7 @@ const Home = () => {
 
     const updateEquations = useCallback(() => {
         return equations.filter(equation => equation.eqString.length > 0).map(equation => {
-            const fn = equation.eqString;
+            const fn = equation.processedEqn || equation.eqString;
             let derivativeObj;
 
             const finalObject = { fn, ...equation }
@@ -106,7 +109,7 @@ const Home = () => {
 
     useEffect(() => {
         const result = updateEquations();
-
+        console.log(result);
         try {
             functionPlot({
                 target: "#target",
@@ -114,12 +117,21 @@ const Home = () => {
                 ...graph,
             });
         } catch(e) {
-            console.error('lul error')
+            console.log(e);
         }
     }, [equations, graph, updateEquations]);
 
-    const addEquation = () => {
-        setEquation(equations => [...equations, { ...equState() }])
+    const addEquation = (eqns) => {
+
+        console.log(eqns);
+
+        const newEqnObjects = eqns.map(eqn => {
+            console.log("EQUATOIN", eqn)
+            return {
+                ...equState({ eqString: eqn })
+            }
+        })
+        setEquation(equations => [...equations, ...newEqnObjects])
     }
 
     const onEqnChange = (e, index = 0) => {
@@ -127,6 +139,7 @@ const Home = () => {
         const value = e.target.value;
 
         let equationString = value;
+        let processedEqn;
 
         const selectedEqn = { ...equations[index] }
         const otherEqns = [ ...equations ]
@@ -134,17 +147,26 @@ const Home = () => {
         /**
          * Equation is considered `implicit` as soon as it encounters `=` in equation
         */
-        selectedEqn.isImplicit = equationString.includes('=');
-        if (selectedEqn.isImplicit) {
+
+        if (equationString.includes('=')) {
             const [LHS, RHS] = equationString.split("=");
-            equationString = `(${RHS}) - (${LHS})`
+            if (RHS.trim().length > 0) {
+                selectedEqn.isImplicit = true;
+                processedEqn = `(${RHS}) - (${LHS})`
+                
+                selectedEqn.processedEqn = processedEqn
+            }
         }
 
-        const parsedEquation = parseEquation(equationString);
+        if (!selectedEqn.isImplicit) {
+            selectedEqn.processedEqn = undefined;
+        }
+
         selectedEqn.eqString = equationString;
 
         let latexEquation;
         try {
+            const parsedEquation = parseEquation(processedEqn || equationString);
             latexEquation = parsedEquation.toTex({ parenthesis: 'keep' })
         } catch(e) {
             latexEquation = undefined
@@ -194,8 +216,6 @@ const Home = () => {
 
         const { tip, ...rest } = graph;
 
-
-
         fileDownload(JSON.stringify({ 
             data: equations, 
             ...rest
@@ -204,10 +224,9 @@ const Home = () => {
 
     const onFileUpload = async (image) => {
         const res = await fileUploadDummy(image);
+        
         addEquation(res.data);
     }
-
-    console.log(equations.map(eqn => eqn.eqString).join());
 
     return (
         <>
@@ -244,7 +263,7 @@ const Home = () => {
                         {equations.map((equation, index) => <Equation eqString={equation.eqString} showEqModal={setEqModal} name={index} onEqnChange={onEqnChange} key={index}/>)}
                     </div>
                     <div>
-                        <Button onClick={addEquation} text="Add Equation"></Button>
+                        <Button onClick={() => addEquation([""])} text="Add Equation"></Button>
                     </div>
                 </div>
                 <div className={styles.rightSide}>
