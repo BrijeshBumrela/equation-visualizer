@@ -3,9 +3,9 @@ import Input from '../../UI/Input/Input';
 import styles from './EqForm.module.scss';
 import Button from '../../UI/Button/Button';
 import SingleSwitch from '../SingleSwitch/SingleSwitch';
+import { SketchPicker } from 'react-color';
 
-
-const EqForm = ({ onValueChange, updateModal, index, initialData }) => {
+const EqForm = ({ onValueChange, updateModal, index, initialData, handleColorChange }) => {
     const [eqSettings, setEqSettings] = useState(initialData);
 
     useEffect(() => {
@@ -32,6 +32,10 @@ const EqForm = ({ onValueChange, updateModal, index, initialData }) => {
         setEqSettings(newEqnSettings)
     }
 
+    const handleColorChangeHelper = (color) => {
+        handleColorChange(color, index);
+    }
+
     return (
         <>
             <Input
@@ -41,6 +45,13 @@ const EqForm = ({ onValueChange, updateModal, index, initialData }) => {
                 placeholder="Color of the equation"
                 value={(eqSettings && eqSettings.color) || ''}
             />
+            
+            <SketchPicker 
+                color={(eqSettings && eqSettings.color) || '#000'}
+                onChangeComplete={handleColorChangeHelper}    
+            />
+            
+            
             <div className={styles.tip}>
                 <SingleSwitch defaultValue={(eqSettings && eqSettings.isDerivative) || false} name="isDerivative" onChange={handleToggle} label="Show Derivative tangent"/>
             </div>

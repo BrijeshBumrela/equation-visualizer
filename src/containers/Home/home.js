@@ -33,7 +33,7 @@ const fileUploadDummy = () => {
  * 
 */
 const equState = (obj) => {
-    let eqString = '', color = 'red';
+    let eqString = '', color = '#000';
 
     if (obj && obj.eqString) {
         eqString = obj.eqString;
@@ -231,6 +231,18 @@ const Home = () => {
         }
     }
 
+    const handleColorChange = (color, index) => {
+        let selectedEqn = { ...equations[index] }
+        const allEqns = [ ...equations ]
+
+        selectedEqn.color = color.hex;
+        
+        allEqns[index] = selectedEqn;
+        setEquation(allEqns);
+    }
+
+    console.log(equations[0].color);
+
     return (
         <>
             <Nav onClick={showModal} onFileUpload={onFileUpload} onGenerate={handleJsonGenerate}/>
@@ -258,6 +270,7 @@ const Home = () => {
                         index={eqModalVisible.index} 
                         updateModal={setEqModal} 
                         onValueChange={handleEqValueChange}
+                        handleColorChange={handleColorChange}
                     />
 
                 </Modal>
