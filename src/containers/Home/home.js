@@ -199,12 +199,12 @@ const Home = () => {
 
     const handleEqValueChange = (newEquationSettings, index) => {
         let selectedEqn = { ...equations[index] }
-        const otherEqns = equations.filter((_, idx) => idx !== index);
+        const allEqns = [ ...equations ]
 
         selectedEqn = { ...selectedEqn, ...newEquationSettings };
         
-        const updatedEqns = [...otherEqns, selectedEqn];
-        setEquation(updatedEqns);
+        allEqns[index] = selectedEqn;
+        setEquation(allEqns);
     }
 
     const handleJsonGenerate = () => {
@@ -220,9 +220,11 @@ const Home = () => {
 
     const onFileUpload = async (e) => {
         const file = e.target.files[0];
+        console.log('ha')
         // const res = await fileUploadDummy();
         try {
             const res = await fileUpload(file);
+            console.log(res);
             addEquation([res.data.eqString]);
         } catch(e) {
             console.error(e);

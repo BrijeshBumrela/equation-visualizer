@@ -276,4 +276,6 @@ var latex_to_js = function(input) {
 	
 };
 
-export default latex_to_js
+console.log(latex_to_js(`frac{- b - \\sqrt{b^{2} - 4 \\; a \\; c}}{2 \\; a}`))
+
+// export default latex_to_js
