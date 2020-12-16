@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Equation from '../../components/Equation/Equation';
 import Button from '../../UI/Button/Button';
 import styles from './home.module.scss';
-import d3, { easeQuad } from 'd3';
+import d3 from 'd3';
 import functionPlot from 'function-plot';
 import graphConfig from '../../config/graph';
 import { Modal } from 'antd';
@@ -17,10 +17,10 @@ window.d3 = d3;
 
 const fileUpload = imageUploadService(8000)
 
-const fileUploadDummy = (image) => {
+const fileUploadDummy = () => {
     return new Promise((res, rej) => {
         setTimeout(() => {
-            res({ data: ["x^2 + 1", "1/x"] })
+            res({ data: { eqString: "x^2 + 1" } })
         }, 1500);
     })
 }
@@ -122,11 +122,7 @@ const Home = () => {
     }, [equations, graph, updateEquations]);
 
     const addEquation = (eqns) => {
-
-        console.log(eqns);
-
         const newEqnObjects = eqns.map(eqn => {
-            console.log("EQUATOIN", eqn)
             return {
                 ...equState({ eqString: eqn })
             }
@@ -222,10 +218,15 @@ const Home = () => {
         }, null, 4), 'value.json');
     }
 
-    const onFileUpload = async (image) => {
-        const res = await fileUploadDummy(image);
-        
-        addEquation(res.data);
+    const onFileUpload = async (e) => {
+        const file = e.target.files[0];
+        // const res = await fileUploadDummy();
+        try {
+            const res = await fileUpload(file);
+            addEquation([res.data.eqString]);
+        } catch(e) {
+            console.error(e);
+        }
     }
 
     return (
