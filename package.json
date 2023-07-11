@@ -15,12 +15,12 @@
     "js-file-download": "^0.4.12",
     "mathjax": "^3.0.5",
     "mathjs": "^7.1.0",
-    "node-sass": "^4.14.1",
+    "node-sass": "^9.0.0",
     "react": "^16.13.1",
     "react-color": "^2.19.3",
     "react-dom": "^16.13.1",
     "react-file-download": "^0.3.5",
-    "react-scripts": "3.4.1"
+    "react-scripts": "5.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
